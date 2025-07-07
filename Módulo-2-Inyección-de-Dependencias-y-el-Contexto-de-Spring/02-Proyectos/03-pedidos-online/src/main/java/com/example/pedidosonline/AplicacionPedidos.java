@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AplicacionPedidos {
 
 	public static void main(String[] args) {
+		// El metodo main ahora solo se encarga de arrancar la aplicacion
+		// Spring encontrar y ejecutara EjecutorAplicacion automaticamente.
 		SpringApplication.run(AplicacionPedidos.class, args);
 	}
 
