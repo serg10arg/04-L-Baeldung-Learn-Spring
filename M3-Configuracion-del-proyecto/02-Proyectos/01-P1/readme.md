@@ -69,7 +69,7 @@ graph TD
     end
 
     style D fill:#28a745,stroke:#fff,stroke-width:2px,color:#fff
-    style C fill:#007bff,stroke:#fff,stroke--width:2px,color:#fff
+    style C fill:#007bff,stroke-width:2px,color:#fff
     style E fill:#ffc107,stroke:#333,stroke-width:2px,color:#333
     style G fill:#6c757d,stroke:#fff,stroke-width:2px,color:#fff
 ```
