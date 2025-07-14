@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Define una propiedad para la ruta de los logs -->
+    <property name="LOGS_DIR" value="./logs" /> <!-- [44] -->
+
+    <!-- Appender para la consola con patrón de colores -->
+    <appender name="Consola" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1}): %msg%n%throwable
+            </Pattern>
+        </layout>
+    </appender>
+
+    <!-- Appender para archivo con política de rotación diaria y por tamaño -->
+    <appender name="ArchivoRodante" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_DIR}/gestor-tareas.log</file> <!-- Archivo principal de log [44] -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C{1} [%t] %m%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Patrón de nombre de archivo para logs archivados: diario y numerado si excede tamaño -->
+            <fileNamePattern>${LOGS_DIR}/archivado/gestor-tareas-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern> <!-- [44] -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize> <!-- Rotar cada 10 MB [44] -->
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Configuración del nivel ROOT para el perfil 'prod' -->
+    <springProfile name="prod"> <!-- [70] -->
+        <root level="INFO"> <!-- [44] -->
+            <appender-ref ref="ArchivoRodante" />
+            <appender-ref ref="Consola" />
+        </root>
+    </springProfile>
+
+    <!-- Configuración del nivel ROOT para perfiles que NO son 'prod' (ej. dev, test) -->
+    <springProfile name="!prod"> <!-- [71] -->
+        <root level="DEBUG"> <!-- [44] -->
+            <appender-ref ref="ArchivoRodante" />
+            <appender-ref ref="Consola" />
+        </root>
+    </springProfile>
+
+    <!-- Nivel de log específico para nuestro paquete de aplicación -->
+    <logger name="com.baeldung.gestortareas" level="DEBUG" additivity="false"> <!-- [44, 64] -->
+        <appender-ref ref="Consola" />
+        <appender-ref ref="ArchivoRodante" />
+    </logger>
+</configuration>
