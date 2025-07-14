@@ -69,12 +69,12 @@ El siguiente diagrama ilustra el flujo de una petición para generar un ID de ta
 
 ```mermaid
 graph TD
-    subgraph "Cliente"
+    subgraph Cliente
         A[Usuario/Cliente]
     end
 
-    subgraph "Aplicación Spring Boot"
-        B[Endpoint GET /tarea/generar-id/{nombre}]
+    subgraph Aplicación Spring Boot
+        B["Endpoint GET /tarea/generar-id/{nombre}"]
         C[ControladorTareas]
         D[ServicioTareas]
         E{¿Perfil 'prod' activo?}
