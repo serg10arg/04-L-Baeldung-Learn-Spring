@@ -42,7 +42,7 @@ graph TD
         P[application.properties]
         A[Actuator Core]
         HI[IndicadorDeSaludDeTareas]
-        INFO[InfoContributor (desde properties)]
+        INFO["InfoContributor (desde properties)"]
     end
 
     P -- Configura rutas y exposición --> A
