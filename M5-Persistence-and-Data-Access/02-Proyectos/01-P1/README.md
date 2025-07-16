@@ -56,24 +56,24 @@ El siguiente diagrama ilustra la lógica ejecutada por `CommandLineRunner` para 
 ```mermaid
 graph TD
     A(Iniciar Aplicación) --> B[Ejecutar CommandLineRunner.run()];
-
-    B --> C{1. Intento de Creación EXITOSA};
+    
+    B --> C{"1. Intento de Creación EXITOSA"};
     C --> D[Crear Pedido y Productos VÁLIDOS];
     D --> E(Llamar a servicio.crearPedidoConProductos);
     E --> F[<br><strong>@Transactional Inicia</strong><br><br>1. Crear objeto Pedido<br>2. Añadir productos al Pedido<br>3. Llamar a repositorio.save(pedido)];
     F --> G{¿Se lanzó excepción?};
     G -- No --> H[<br><strong>Transacción COMMIT</strong><br><br>JPA guarda Pedido y Productos<br> en cascada.];
     H --> I((DB: Datos Guardados));
-
-    B --> J{2. Intento de Creación con FALLO};
+    
+    B --> J{"2. Intento de Creación con FALLO"};
     J --> K[Crear Pedido y un Producto con 'ERROR'];
     K --> L(Llamar a servicio.crearPedidoConProductos);
     L --> M[<br><strong>@Transactional Inicia</strong><br><br>1. Crear objeto Pedido<br>2. Bucle de productos...<br><strong>Lanza RuntimeException</strong>];
     M --> N{¿Se lanzó excepción?};
     N -- Sí --> O[<br><strong>Transacción ROLLBACK</strong><br><br>Todos los cambios se deshacen.<br>No se escribe en la DB.];
     O --> P((DB: Sin cambios));
-
-    I --> Q[3. Verificación Final en Logs];
+    
+    I --> Q["3. Verificación Final en Logs"];
     P --> Q;
     Q --> R(Fin de la demo);
 
