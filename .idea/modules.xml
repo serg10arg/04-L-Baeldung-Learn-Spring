@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/M5-Persistence-and-Data-Access/02-Proyectos/01-P1/01-P1.iml" filepath="$PROJECT_DIR$/M5-Persistence-and-Data-Access/02-Proyectos/01-P1/01-P1.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/04-L-Baeldung-Learn-Spring.iml" filepath="$PROJECT_DIR$/.idea/04-L-Baeldung-Learn-Spring.iml" />
     </modules>
   </component>
