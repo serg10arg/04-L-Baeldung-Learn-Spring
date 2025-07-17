@@ -55,27 +55,27 @@ El siguiente diagrama ilustra la secuencia de operaciones ejecutada por el `Comm
 
 ```mermaid
 graph TD
-    A(Iniciar Aplicación) --> B[Ejecutar CommandLineRunner.run()];
+    A("Iniciar Aplicación") --> B["Ejecutar CommandLineRunner.run()"];
 
-    B --> C{1. Creación en Cascada};
-    C --> D[Crear `Proyecto` y `Tareas` en memoria];
-    D --> E[Llamar a `projectService.crearProyecto(proyecto)`];
+    B --> C{"1. Creación en Cascada"};
+    C --> D["Crear `Proyecto` y `Tareas` en memoria"];
+    D --> E["Llamar a `projectService.crearProyecto(proyecto)`"];
     E --> F["@Transactional Inicia<br>1. `repository.save(proyecto)`<br>2. JPA persiste Proyecto y Tareas<br>3. @Transactional Commit"];
     F --> G((DB: Proyecto y Tareas Guardados));
 
-    B --> H{2. Recuperación Paginada};
+    B --> H{"2. Recuperación Paginada"};
     H --> I["Llamar a `projectService.findAll(pageable)`"];
     I --> J["@Transactional (readOnly) Inicia<br>SQL: `select ... from project ... limit ?`<br>La sesión de BD se cierra aquí"];
-    J --> K[Iterar sobre resultados y llamar a `getNombre()`<br><i>(Acceso seguro fuera de la transacción)</i>];
+    J --> K["Iterar sobre resultados y llamar a `getNombre()`<br><i>(Acceso seguro fuera de la transacción)</i>"];
     K --> L((Log: Nombres de proyectos mostrados));
 
-    B --> M{3. Carga Optimizada};
+    B --> M{"3. Carga Optimizada"};
     M --> N["Llamar a `projectService.findByIdWithTasks(id)`"];
     N --> O["@Transactional (readOnly) Inicia<br>SQL: `select ... from project p left join fetch p.tareas ...`<br>La sesión de BD se cierra aquí"];
-    O --> P[Imprimir `proyecto.toString()`<br><i>(Funciona porque `tareas` ya fue cargado con FETCH)</i>];
+    O --> P["Imprimir `proyecto.toString()`<br><i>(Funciona porque `tareas` ya fue cargado con FETCH)</i>"];
     P --> Q((Log: Proyecto y Tareas mostrados));
 
-    G & L & Q --> R(Fin de la Demo);
+    G & L & Q --> R("Fin de la Demo");
 
     style A fill:#cde4ff,stroke:#333,stroke-width:2px
     style R fill:#cde4ff,stroke:#333,stroke-width:2px
