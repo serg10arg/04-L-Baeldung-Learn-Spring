@@ -55,42 +55,57 @@ src
 El flujo de dependencias entre las capas sigue un patrón unidireccional, lo que garantiza un bajo acoplamiento y alta cohesión.
 
 ```
+%%{init: { "flowchart": { "curve": "step" } } }%%
 graph TD
-    subgraph "Cliente Externo"
-        Client(Cliente API / Frontend)
+    %% 1. Definición de Estilos (Clases)
+    classDef client fill:#343a40,stroke:#fff,color:#fff,font-weight:bold
+    classDef endpoint fill:#2c7be5,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold
+    classDef service fill:#24a148,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold
+    classDef repo fill:#ffb400,stroke:#2e2e2e,stroke-width:2px,color:#2e2e2e,font-weight:bold
+    classDef db fill:#e02828,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold
+    classDef dto fill:#f0f4f8,stroke:#0a1d37,stroke-width:2px,color:#263d59
+    classDef entity fill:#fbeee0,stroke:#8a5914,stroke-width:2px,color:#b07d2e
+    classDef mapper fill:#6f42c1,stroke:#fff,stroke-width:2px,color:#fff
+
+    %% 2. Definición de Nodos
+    subgraph "Arquitectura de la Aplicación"
+        direction TB
+        Controller["fa:fa-sign-in-alt 1. **Controlador**<br/>_@RestController_"]:::endpoint
+        Service["fa:fa-cogs 2. **Servicio**<br/>_@Service_"]:::service
+        Repository["fa:fa-database 3. **Repositorio**<br/>_@Repository_"]:::repo
+        Database([fa:fa-server 4. **Base de Datos**<br/>_H2_]):::db
     end
 
-    subgraph "Aplicación Spring Boot: Capas de la Aplicación"
-        Controller["Controlador<br>@RestController"]
-        Service["Servicio<br>@Service"]
-        Repository["Repositorio<br>@Repository"]
-        Database[("Base de Datos<br>H2")]
-        
-        Controller -->|1. Llama a métodos de| Service
-        Service -->|2. Usa métodos de| Repository
-        Repository -->|3. Interactúa con| Database
+    subgraph "Objetos de Datos y Mapeo"
+        direction TB
+        DTO["fa:fa-user DTO<br/>_(UsuarioDTO)_"]:::dto
+        ModelMapper["fa:fa-exchange-alt ModelMapper"]:::mapper
+        Entity["fa:fa-id-card Entidad<br/>_(Usuario)_"]:::entity
     end
 
-    subgraph "Objetos de Datos y Transformación"
-        DTO["DTO<br>(UsuarioDTO)"]
-        Entity["Entidad<br>(Usuario)"]
-        ModelMapper["Mapeador<br>ModelMapper"]
+    Client["fa:fa-globe **Cliente Externo**<br/>(API/Frontend)"]:::client
 
-        Controller -- usa/produce --> DTO
-        Controller -- usa --> ModelMapper
-        ModelMapper -- convierte --> Entity
-        Service -- opera con --> Entity
-        Repository -- persiste/recupera --> Entity
-    end
+    %% 3. Definición de Flujos y Relaciones
+    Client -- "1. Petición HTTP" --> Controller
+    Controller -- "2. Llama a" --> Service
+    Service -- "3. Usa" --> Repository
+    Repository -- "4. Interactúa con" --> Database
+
+    %% Flujo de retorno de datos (implícito en el flujo principal)
     
-    Client -- Petición HTTP --> Controller
-    Controller -- Respuesta HTTP --> Client
-    
-    style Client fill:#6c757d,stroke:#fff,color:#fff
-    style Controller fill:#007bff,stroke:#fff,color:#fff
-    style Service fill:#28a745,stroke:#fff,color:#fff
-    style Repository fill:#ffc107,stroke:#333,color:#333
-    style Database fill:#dc3545,stroke:#fff,color:#fff
+    %% Relaciones con objetos de datos
+    Controller -- "Recibe/Devuelve" --> DTO
+    Controller -- "Usa para convertir" --> ModelMapper
+    ModelMapper -.-> DTO
+    ModelMapper -. "Mapea a/desde" .-> Entity
+    Service -- "Opera con" --> Entity
+    Repository -- "Persiste/Recupera" --> Entity
+
+    Controller -- "5. Respuesta HTTP" --> Client
+
+    %% 4. Estilos de Conexión
+    linkStyle 0,7 stroke-width:3px,stroke:#343a40,color:black
+    linkStyle 1,2,3 stroke-width:2px,stroke-dasharray: 5 5
 
 ```
 
