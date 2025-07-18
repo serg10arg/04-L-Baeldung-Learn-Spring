@@ -54,36 +54,27 @@ src
 
 El flujo de dependencias entre las capas sigue un patrón unidireccional, lo que garantiza un bajo acoplamiento y alta cohesión.
 
-```
+```mermaid
 graph TD
-    %% 1. Definición de Estilos (Clases)
-    classDef client fill:#6c757d,stroke:#fff,color:#fff,font-weight:bold
-    classDef controller fill:#007bff,stroke:#fff,color:#fff,font-weight:bold
-    classDef service fill:#28a745,stroke:#fff,color:#fff,font-weight:bold
-    classDef repository fill:#ffc107,stroke:#333,color:#333,font-weight:bold
-    classDef database fill:#dc3545,stroke:#fff,color:#fff,font-weight:bold
-    classDef data fill:#f0f4f8,stroke:#0a1d37,stroke-width:2px,color:#263d59
-    classDef ioc fill:#e8f7ff,stroke:#007bff,stroke-width:2px,color:#0056b3,stroke-dasharray: 5 5
 
-    %% 2. Definición de Nodos
     subgraph "Ciclo de Vida de la Petición (Runtime)"
         direction LR
-        Client["fa:fa-globe Cliente Externo"]:::client
-        Controller["fa:fa-route Controlador<br>@RestController"]:::controller
-        Service["fa:fa-cogs Servicio<br>@Service"]:::service
-        Repository["fa:fa-database Repositorio<br>@Repository"]:::repository
-        Database[("fa:fa-server Base de Datos<br>H2")]:::database
+        Client[Cliente Externo]
+        Controller[Controlador @RestController]
+        Service[Servicio @Service]
+        Repository[Repositorio @Repository]
+        Database[(Base de Datos H2)]
     end
 
     subgraph "Contenedor IoC y Dependencias (Startup)"
         direction TB
-        IOCContainer["fa:fa-box-open Spring IoC Container"]:::ioc
-        ModelMapperBean["fa:fa-exchange-alt Bean<br>ModelMapper"]:::data
+        IOCContainer[Spring IoC Container]
+        ModelMapperBean[Bean ModelMapper]
         
-        IOCContainer -- "Crea y gestiona" --> Controller
-        IOCContainer -- "Crea y gestiona" --> Service
-        IOCContainer -- "Crea y gestiona" --> Repository
-        IOCContainer -- "Crea y gestiona" --> ModelMapperBean
+        IOCContainer -->|Crea y gestiona| Controller
+        IOCContainer -->|Crea y gestiona| Service
+        IOCContainer -->|Crea y gestiona| Repository
+        IOCContainer -->|Crea y gestiona| ModelMapperBean
 
         Controller -.->|Inyecta| Service
         Controller -.->|Inyecta| ModelMapperBean
@@ -91,32 +82,20 @@ graph TD
     end
 
     subgraph "Objetos de Datos"
-        DTO["fa:fa-user-edit DTO<br>(UsuarioDTO)"]:::data
-        Entity["fa:fa-id-card Entidad<br>(Usuario)"]:::data
+        DTO[DTO (UsuarioDTO)]
+        Entity[Entidad (Usuario)]
     end
 
-    %% 3. Definición de Flujos y Relaciones
-    Client -- "1. Petición HTTP con DTO (JSON)" --> Controller
-    
-    Controller -- "2. Usa ModelMapper para<br>convertir DTO a Entidad" --> Entity
-    Controller -- "3. Invoca lógica de negocio" --> Service
-    
-    Service -- "4. Opera con la Entidad" --> Repository
-    Repository -- "5. Persiste/Recupera la Entidad" --> Database
-    
-    Database -- "6. Retorna datos" --> Repository
-    Repository -- "7. Retorna Entidad" --> Service
-    Service -- "8. Retorna Entidad" --> Controller
-    
-    Controller -- "9. Usa ModelMapper para<br>convertir Entidad a DTO" --> DTO
-    Controller -- "10. Respuesta HTTP con DTO (JSON)" --> Client
-
-    %% Estilos de Conexión
-    linkStyle 0,9 stroke-width:2px,stroke:#343a40,color:black
-    linkStyle 2,3,4,5,6,7 stroke-width:2px,stroke:#28a745
-    linkStyle 1,8 stroke-width:2px,stroke:#6f42c1,stroke-dasharray: 3 3
-    linkStyle 10,11,12,13,14,15,16 stroke-width:1.5px,stroke:#007bff,stroke-dasharray: 5 5,color:#0056b3
-
+    Client -->|1. Petición HTTP con DTO (JSON)| Controller
+    Controller -->|2. Usa ModelMapper para convertir DTO a Entidad| Entity
+    Controller -->|3. Invoca lógica de negocio| Service
+    Service -->|4. Opera con la Entidad| Repository
+    Repository -->|5. Persiste/Recupera la Entidad| Database
+    Database -->|6. Retorna datos| Repository
+    Repository -->|7. Retorna Entidad| Service
+    Service -->|8. Retorna Entidad| Controller
+    Controller -->|9. Usa ModelMapper para convertir Entidad a DTO| DTO
+    Controller -->|10. Respuesta HTTP con DTO (JSON)| Client
 ```
 
 ## **5. Explicación del Flujo (Ej: Crear un Usuario)**
