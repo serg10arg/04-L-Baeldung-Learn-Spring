@@ -56,19 +56,41 @@ El flujo de dependencias entre las capas sigue un patrón unidireccional, lo que
 
 ```
 graph TD
-    A["Controlador<br/>(@RestController)"] --> B["Servicio<br/>(@Service)"];
-    B --> C["Repositorio<br/>(@Repository)"];
-    C --> D["Base de Datos<br/>(H2)"];
-
-    subgraph "Flujo de Datos"
-        A -- Usa --> E["DTO<br/>(Data Transfer Object)"];
-        B -- Usa --> F["Modelo<br/>(@Entity)"];
+    subgraph "Cliente Externo"
+        Client(Cliente API / Frontend)
     end
 
-    style A fill:#007bff,stroke:#fff,color:#fff
-    style B fill:#28a745,stroke:#fff,color:#fff
-    style C fill:#ffc107,stroke:#333,color:#333
-    style D fill:#6c757d,stroke:#fff,color:#fff
+    subgraph "Aplicación Spring Boot: Capas de la Aplicación"
+        Controller["Controlador<br>@RestController"]
+        Service["Servicio<br>@Service"]
+        Repository["Repositorio<br>@Repository"]
+        Database[("Base de Datos<br>H2")]
+        
+        Controller -->|1. Llama a métodos de| Service
+        Service -->|2. Usa métodos de| Repository
+        Repository -->|3. Interactúa con| Database
+    end
+
+    subgraph "Objetos de Datos y Transformación"
+        DTO["DTO<br>(UsuarioDTO)"]
+        Entity["Entidad<br>(Usuario)"]
+        ModelMapper["Mapeador<br>ModelMapper"]
+
+        Controller -- usa/produce --> DTO
+        Controller -- usa --> ModelMapper
+        ModelMapper -- convierte --> Entity
+        Service -- opera con --> Entity
+        Repository -- persiste/recupera --> Entity
+    end
+    
+    Client -- Petición HTTP --> Controller
+    Controller -- Respuesta HTTP --> Client
+    
+    style Client fill:#6c757d,stroke:#fff,color:#fff
+    style Controller fill:#007bff,stroke:#fff,color:#fff
+    style Service fill:#28a745,stroke:#fff,color:#fff
+    style Repository fill:#ffc107,stroke:#333,color:#333
+    style Database fill:#dc3545,stroke:#fff,color:#fff
 
 ```
 
