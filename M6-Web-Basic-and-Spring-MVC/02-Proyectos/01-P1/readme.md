@@ -55,57 +55,67 @@ src
 El flujo de dependencias entre las capas sigue un patrón unidireccional, lo que garantiza un bajo acoplamiento y alta cohesión.
 
 ```
-%%{init: { "flowchart": { "curve": "step" } } }%%
 graph TD
     %% 1. Definición de Estilos (Clases)
-    classDef client fill:#343a40,stroke:#fff,color:#fff,font-weight:bold
-    classDef endpoint fill:#2c7be5,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold
-    classDef service fill:#24a148,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold
-    classDef repo fill:#ffb400,stroke:#2e2e2e,stroke-width:2px,color:#2e2e2e,font-weight:bold
-    classDef db fill:#e02828,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold
-    classDef dto fill:#f0f4f8,stroke:#0a1d37,stroke-width:2px,color:#263d59
-    classDef entity fill:#fbeee0,stroke:#8a5914,stroke-width:2px,color:#b07d2e
-    classDef mapper fill:#6f42c1,stroke:#fff,stroke-width:2px,color:#fff
+    classDef client fill:#6c757d,stroke:#fff,color:#fff,font-weight:bold
+    classDef controller fill:#007bff,stroke:#fff,color:#fff,font-weight:bold
+    classDef service fill:#28a745,stroke:#fff,color:#fff,font-weight:bold
+    classDef repository fill:#ffc107,stroke:#333,color:#333,font-weight:bold
+    classDef database fill:#dc3545,stroke:#fff,color:#fff,font-weight:bold
+    classDef data fill:#f0f4f8,stroke:#0a1d37,stroke-width:2px,color:#263d59
+    classDef ioc fill:#e8f7ff,stroke:#007bff,stroke-width:2px,color:#0056b3,stroke-dasharray: 5 5
 
     %% 2. Definición de Nodos
-    subgraph "Arquitectura de la Aplicación"
-        direction TB
-        Controller["fa:fa-sign-in-alt 1. **Controlador**<br/>_@RestController_"]:::endpoint
-        Service["fa:fa-cogs 2. **Servicio**<br/>_@Service_"]:::service
-        Repository["fa:fa-database 3. **Repositorio**<br/>_@Repository_"]:::repo
-        Database([fa:fa-server 4. **Base de Datos**<br/>_H2_]):::db
+    subgraph "Ciclo de Vida de la Petición (Runtime)"
+        direction LR
+        Client["fa:fa-globe Cliente Externo"]:::client
+        Controller["fa:fa-route Controlador<br>@RestController"]:::controller
+        Service["fa:fa-cogs Servicio<br>@Service"]:::service
+        Repository["fa:fa-database Repositorio<br>@Repository"]:::repository
+        Database[("fa:fa-server Base de Datos<br>H2")]:::database
     end
 
-    subgraph "Objetos de Datos y Mapeo"
+    subgraph "Contenedor IoC y Dependencias (Startup)"
         direction TB
-        DTO["fa:fa-user DTO<br/>_(UsuarioDTO)_"]:::dto
-        ModelMapper["fa:fa-exchange-alt ModelMapper"]:::mapper
-        Entity["fa:fa-id-card Entidad<br/>_(Usuario)_"]:::entity
+        IOCContainer["fa:fa-box-open Spring IoC Container"]:::ioc
+        ModelMapperBean["fa:fa-exchange-alt Bean<br>ModelMapper"]:::data
+        
+        IOCContainer -- "Crea y gestiona" --> Controller
+        IOCContainer -- "Crea y gestiona" --> Service
+        IOCContainer -- "Crea y gestiona" --> Repository
+        IOCContainer -- "Crea y gestiona" --> ModelMapperBean
+
+        Controller -.->|Inyecta| Service
+        Controller -.->|Inyecta| ModelMapperBean
+        Service -.->|Inyecta| Repository
     end
 
-    Client["fa:fa-globe **Cliente Externo**<br/>(API/Frontend)"]:::client
+    subgraph "Objetos de Datos"
+        DTO["fa:fa-user-edit DTO<br>(UsuarioDTO)"]:::data
+        Entity["fa:fa-id-card Entidad<br>(Usuario)"]:::data
+    end
 
     %% 3. Definición de Flujos y Relaciones
-    Client -- "1. Petición HTTP" --> Controller
-    Controller -- "2. Llama a" --> Service
-    Service -- "3. Usa" --> Repository
-    Repository -- "4. Interactúa con" --> Database
-
-    %% Flujo de retorno de datos (implícito en el flujo principal)
+    Client -- "1. Petición HTTP con DTO (JSON)" --> Controller
     
-    %% Relaciones con objetos de datos
-    Controller -- "Recibe/Devuelve" --> DTO
-    Controller -- "Usa para convertir" --> ModelMapper
-    ModelMapper -.-> DTO
-    ModelMapper -. "Mapea a/desde" .-> Entity
-    Service -- "Opera con" --> Entity
-    Repository -- "Persiste/Recupera" --> Entity
+    Controller -- "2. Usa ModelMapper para<br>convertir DTO a Entidad" --> Entity
+    Controller -- "3. Invoca lógica de negocio" --> Service
+    
+    Service -- "4. Opera con la Entidad" --> Repository
+    Repository -- "5. Persiste/Recupera la Entidad" --> Database
+    
+    Database -- "6. Retorna datos" --> Repository
+    Repository -- "7. Retorna Entidad" --> Service
+    Service -- "8. Retorna Entidad" --> Controller
+    
+    Controller -- "9. Usa ModelMapper para<br>convertir Entidad a DTO" --> DTO
+    Controller -- "10. Respuesta HTTP con DTO (JSON)" --> Client
 
-    Controller -- "5. Respuesta HTTP" --> Client
-
-    %% 4. Estilos de Conexión
-    linkStyle 0,7 stroke-width:3px,stroke:#343a40,color:black
-    linkStyle 1,2,3 stroke-width:2px,stroke-dasharray: 5 5
+    %% Estilos de Conexión
+    linkStyle 0,9 stroke-width:2px,stroke:#343a40,color:black
+    linkStyle 2,3,4,5,6,7 stroke-width:2px,stroke:#28a745
+    linkStyle 1,8 stroke-width:2px,stroke:#6f42c1,stroke-dasharray: 3 3
+    linkStyle 10,11,12,13,14,15,16 stroke-width:1.5px,stroke:#007bff,stroke-dasharray: 5 5,color:#0056b3
 
 ```
 
