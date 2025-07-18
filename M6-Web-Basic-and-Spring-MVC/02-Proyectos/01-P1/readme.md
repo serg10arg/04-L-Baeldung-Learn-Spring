@@ -81,10 +81,8 @@ graph TD
         Service -.->|Inyecta| Repository
     end
 
-    subgraph "Objetos de Datos"
-        DTO[DTO (UsuarioDTO)]
-        Entity[Entidad (Usuario)]
-    end
+    DTO[DTO (UsuarioDTO)]
+    Entity[Entidad (Usuario)]
 
     Client -->|1. Petición HTTP con DTO (JSON)| Controller
     Controller -->|2. Usa ModelMapper para convertir DTO a Entidad| Entity
