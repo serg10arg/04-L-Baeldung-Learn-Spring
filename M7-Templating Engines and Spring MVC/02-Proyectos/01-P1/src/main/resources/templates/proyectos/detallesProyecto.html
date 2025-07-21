@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Proyecto</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding-top: 20px; }
+        .container { max-width: 960px; }
+        .card { margin-top: 20px; }
+        .list-group-item { display: flex; justify-content: space-between; align-items: center; }
+        .badge { font-size: 0.9em; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mb-4">Detalles del Proyecto</h1>
+
+    <div th:if="${proyecto}" class="card">
+        <div class="card-header bg-primary text-white">
+            <h2 th:text="${proyecto.nombre}">Nombre del Proyecto</h2>
+        </div>
+        <div class="card-body">
+            <p><strong>ID:</strong> <span th:text="${proyecto.id}"></span></p>
+            <p><strong>Fecha de Creación:</strong> <span th:text="${#temporals.format(proyecto.fechaCreacion, 'dd-MM-yyyy')}"></span></p>
+
+            <h3 class="mt-4">Tareas Asociadas</h3>
+            <div th:if="${#lists.isEmpty(proyecto.tareas)}" class="alert alert-info">
+                No hay tareas asociadas a este proyecto.
+            </div>
+            <ul class="list-group">
+                <li th:each="tarea : ${proyecto.tareas}" class="list-group-item">
+                    <div>
+                        <h5 th:text="${tarea.nombre}">Nombre Tarea</h5>
+                        <p th:text="${tarea.descripcion}">Descripción Tarea</p>
+                    </div>
+                    <span th:classappend="${tarea.estado == T(com.example.gestionproyectos.modelos.EstadoTarea).COMPLETADA ? 'badge-success' : (tarea.estado == T(com.example.gestionproyectos.modelos.EstadoTarea).EN_PROGRESO ? 'badge-warning' : 'badge-info')}"
+                          class="badge badge-pill" th:text="${tarea.estado}">Estado Tarea</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div th:unless="${proyecto}" class="alert alert-danger mt-4">
+        Proyecto no encontrado.
+    </div>
+
+    <a th:href="@{/templates/proyectos}" class="btn btn-secondary mt-3">Volver a la Lista de Proyectos</a>
+</div>
+</body>
+</html>
