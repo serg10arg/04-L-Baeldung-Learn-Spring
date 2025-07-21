@@ -80,7 +80,7 @@ Esta es una configuración de logging más refinada y potente que `show-sql`.
 El hecho de que la mayoría de las propiedades de Thymeleaf estén comentadas es una demostración del poder de Spring Boot y su principio de **"convención sobre configuración"**. Spring Boot ya proporciona valores por defecto sensatos para todo esto.
 
 - **`spring.thymeleaf.cache=false`**: Esta es la propiedad más importante aquí. Está comentada, pero es extremadamente útil activarla durante el desarrollo. Al deshabilitar la caché de Thymeleaf, podemos hacer cambios en nuestros archivos `.html` y ver los resultados simplemente actualizando el navegador, sin necesidad de reiniciar toda la aplicación. Esto acelera el ciclo de desarrollo del frontend de manera masiva.
-
+- **`spring.profiles.active=dev`**: Esta es la joya de la corona. Activa el perfil de Spring llamado "dev". Esto permite tener configuraciones condicionales. En nuestro proyecto, tenemos un CommandLineRunner en la clase Application que está anotado con @Profile("dev"). Gracias a esta línea, ese código se ejecutará al arrancar la aplicación, poblando la base de datos con datos de ejemplo. Sin embargo, cuando ejecutemos nuestras pruebas (que usan @ActiveProfiles("test")), este perfil no estará activo y, por lo tanto, el CommandLineRunner será ignorado, dándonos un entorno de prueba limpio y predecible.
 ## **6. Conclusión**
 
 Este archivo `application.properties` está perfectamente ajustado para un **entorno de desarrollo productivo**.
