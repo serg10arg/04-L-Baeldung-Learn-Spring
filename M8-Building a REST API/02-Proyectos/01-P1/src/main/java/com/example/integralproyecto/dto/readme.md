@@ -52,7 +52,7 @@ La solución profesional es crear una **capa de Mapeo**.
 
 Este diagrama ilustra el flujo completo de una petición de creación, destacando el rol de cada componente y DTO.
 
-```
+```mermaid
 graph TD
     A["Cliente<br/>(Envía JSON con datos de creación)"] --> B{POST /personas};
 
@@ -77,7 +77,6 @@ graph TD
     style A fill:#6c757d,stroke:#fff,color:#fff
     style Z fill:#dc3545,stroke:#fff,color:#fff
     style K fill:#28a745,stroke:#fff,color:#fff
-
 ```
 
 1. **Petición:** El cliente envía un JSON que coincide con la estructura de `PersonaCrearDTO`.
