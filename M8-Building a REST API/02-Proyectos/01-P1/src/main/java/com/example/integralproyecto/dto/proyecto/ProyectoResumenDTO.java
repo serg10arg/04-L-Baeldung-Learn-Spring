@@ -1,5 +1,6 @@
 package com.example.integralproyecto.dto.proyecto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,8 +10,10 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@AllArgsConstructor
 public class ProyectoResumenDTO {
 
     private Long id;
     private String nombre;
+
 }

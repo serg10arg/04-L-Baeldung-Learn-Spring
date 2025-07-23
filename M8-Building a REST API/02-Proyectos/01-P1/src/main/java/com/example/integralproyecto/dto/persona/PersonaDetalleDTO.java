@@ -14,5 +14,5 @@ public class PersonaDetalleDTO {
     private Long id;
     private String nombre;
     private int edad;
-    private String correoElectonico;
+    private String correoElectronico;
 }
