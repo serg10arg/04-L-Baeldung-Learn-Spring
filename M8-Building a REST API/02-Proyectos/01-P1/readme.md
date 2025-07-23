@@ -46,31 +46,24 @@ sequenceDiagram
     participant Mapper as ModelMapper
     participant ExceptionHandler as ManejadorExcepcionesGlobal
 
-    Client->>+Controller: GET /api/personas/1
-    Controller->>+Service: obtenerPersonaPorId(1)
-    Service->>+Repository: findById(1)
-    Repository->>+DB: SELECT * FROM personas WHERE id = 1
-    DB-->>-Repository: Devuelve Entidad Persona
-    Repository-->>-Service: Devuelve Optional<Persona>
+    Client->>Controller: GET /api/personas/1
+    Controller->>Service: obtenerPersonaPorId(1)
+    Service->>Repository: findById(1)
+    Repository->>DB: SELECT * FROM personas WHERE id = 1
+    DB-->>Repository: Devuelve Entidad Persona
+    Repository-->>Service: Devuelve Optional&lt;Persona&gt;
 
     alt Recurso Encontrado
-        Service->>+Mapper: map(persona, PersonaDetalleDTO.class)
-        Mapper-->>-Service: Devuelve PersonaDetalleDTO
-        Service-->>-Controller: Devuelve PersonaDetalleDTO
-        Controller-->>-Client: 200 OK con JSON del DTO
+        Service->>Mapper: map(persona, PersonaDetalleDTO.class)
+        Mapper-->>Service: Devuelve PersonaDetalleDTO
+        Service-->>Controller: Devuelve PersonaDetalleDTO
+        Controller-->>Client: 200 OK con JSON del DTO
     else Recurso NO Encontrado
         Repository-->>Service: Devuelve Optional.empty()
         Service-->>Service: Lanza RecursoNoEncontradoException
-        Note right of Service: La ejecución del servicio termina aquí.
         Service->>ExceptionHandler: Captura la excepción
         ExceptionHandler-->>Client: 404 Not Found con mensaje de error
     end
-
-    deactivate Controller
-    deactivate Service
-    deactivate Repository
-    deactivate Mapper
-
 ```
 
 ### **Flujo de Escritura (Ej: `POST /api/personas`)**
@@ -88,19 +81,19 @@ sequenceDiagram
     participant Mapper as ModelMapper
     participant ExceptionHandler as ManejadorExcepcionesGlobal
 
-    Client->>+Spring: POST /api/personas con JSON Body
-    Spring->>+Controller: crearPersona(@Valid @RequestBody PersonaCrearDTO)
+    Client->>Spring: POST /api/personas con JSON Body
+    Spring->>Controller: crearPersona(@Valid @RequestBody PersonaCrearDTO)
 
     alt Validación de DTO Falla
         Spring-->>Spring: @Valid lanza MethodArgumentNotValidException
         Spring->>ExceptionHandler: Captura la excepción
         ExceptionHandler-->>Client: 400 Bad Request con detalles del error
     else Validación de DTO Exitosa
-        Controller->>+Service: crearPersona(personaCrearDTO)
-        Service->>+Repository: existsByCorreoElectronico("correo@ejemplo.com")
-        Repository->>+DB: SELECT COUNT(*) FROM personas WHERE correo_electronico = ?
-        DB-->>-Repository: Devuelve conteo
-        Repository-->>-Service: Devuelve boolean
+        Controller->>Service: crearPersona(personaCrearDTO)
+        Service->>Repository: existsByCorreoElectronico("correo@ejemplo.com")
+        Repository->>DB: SELECT COUNT(*) FROM personas WHERE correo_electronico = ?
+        DB-->>Repository: Devuelve conteo
+        Repository-->>Service: Devuelve boolean
 
         alt Correo ya existe (Conflicto de Negocio)
             Service-->>Service: Lanza RecursoYaExisteException
@@ -108,24 +101,18 @@ sequenceDiagram
             Service->>ExceptionHandler: Captura la excepción
             ExceptionHandler-->>Client: 409 Conflict con mensaje de error
         else Correo es único (Camino Feliz)
-            Service->>+Mapper: map(personaCrearDTO, Persona.class)
-            Mapper-->>-Service: Devuelve nueva Entidad Persona (sin ID)
-            Service->>+Repository: save(persona)
-            Repository->>+DB: INSERT INTO personas (...)
-            DB-->>-Repository: Devuelve Entidad Persona guardada (con ID)
-            Repository-->>-Service: Devuelve Persona guardada
-            Service->>+Mapper: map(personaGuardada, PersonaDetalleDTO.class)
-            Mapper-->>-Service: Devuelve PersonaDetalleDTO
-            Service-->>-Controller: Devuelve PersonaDetalleDTO creado
-            Controller-->>-Client: 201 Created con Header 'Location' y JSON del DTO
+            Service->>Mapper: map(personaCrearDTO, Persona.class)
+            Mapper-->>Service: Devuelve nueva Entidad Persona (sin ID)
+            Service->>Repository: save(persona)
+            Repository->>DB: INSERT INTO personas (...)
+            DB-->>Repository: Devuelve Entidad Persona guardada (con ID)
+            Repository-->>Service: Devuelve Persona guardada
+            Service->>Mapper: map(personaGuardada, PersonaDetalleDTO.class)
+            Mapper-->>Service: Devuelve PersonaDetalleDTO
+            Service-->>Controller: Devuelve PersonaDetalleDTO creado
+            Controller-->>Client: 201 Created con Header 'Location' y JSON del DTO
         end
     end
-
-    deactivate Controller
-    deactivate Service
-    deactivate Repository
-    deactivate Mapper
-
 ```
 
 ## **🛠️ Stack Tecnológico**
