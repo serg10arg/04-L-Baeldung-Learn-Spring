@@ -31,7 +31,7 @@ graph TD
     end
 
 %% Flujo de Creación de Notificación
-    A -- "1. POST /api/notificaciones/eventos" --> C
+    A -- "1 POST /api/notificaciones/eventos" --> C
     C -- "2. Llama a procesarYEnviarNotificacion()" --> D
     D -- "3. Guarda la notificación (save)" --> E
     E -- "4. Persiste en DB" --> F
