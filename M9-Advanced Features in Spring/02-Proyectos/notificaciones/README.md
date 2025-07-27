@@ -32,15 +32,15 @@ graph TD
 
 %% Flujo de Creación de Notificación
     A -- "1 POST /api/notificaciones/eventos" --> C
-    C -- "2. Llama a procesarYEnviarNotificacion()" --> D
-    D -- "3. Guarda la notificación (save)" --> E
-    E -- "4. Persiste en DB" --> F
-    F -- "5. Devuelve Notificacion guardada" --> E
-    E -- "6. Devuelve Mono<Notificacion>" --> D
-    D -- "7. Llama a enviarNotificacionAUsuario()" --> G
-    G -- "8. Envía mensaje por WebSocket" --> B
-    D -- "9. Devuelve Mono<Notificacion>" --> C
-    C -- "10. 201 Created" --> A
+    C -- "2 Llama a procesarYEnviarNotificacion()" --> D
+    D -- "3 Guarda la notificación (save)" --> E
+    E -- "4 Persiste en DB" --> F
+    F -- "5 Devuelve Notificacion guardada" --> E
+    E -- "6 Devuelve Mono<Notificacion>" --> D
+    D -- "7 Llama a enviarNotificacionAUsuario()" --> G
+    G -- "8 Envía mensaje por WebSocket" --> B
+    D -- "9 Devuelve Mono<Notificacion>" --> C
+    C -- "10 201 Created" --> A
 
 %% Flujo de Conexión WebSocket
     B -- "Conexión a<br>/ws/notificaciones/{userId}" --> G
